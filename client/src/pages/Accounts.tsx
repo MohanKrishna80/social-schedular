@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { dummyAccountsData, PLATFORMS } from "../assets/assets";
+import { PLATFORMS } from "../assets/assets";
 import { PlusIcon } from "lucide-react";
 import AccountList from "../components/AccountList";
 import PlatformPIckerModel from "../components/PlatformPIckerModel";
+import toast from "react-hot-toast";
+import api from "../api/axios";
 
 const Accounts = () => {
   const [accounts, setAccounts] = useState<any[]>([]);
@@ -11,29 +13,124 @@ const Accounts = () => {
 
   const fetchAccounts = async (
     isSync = false,
-    platform?: string,
-    successMsg?: string | null,
+    platform?: string | null,
+    successMsg?: string | null
   ) => {
-    setAccounts(dummyAccountsData);
+    try {
+      if (isSync) {
+        const label = platform
+          ? platform.charAt(0).toUpperCase() + platform.slice(1)
+          : "Social Media";
 
-    console.log(isSync, platform, successMsg);
+        toast.loading(`Syncing ${label} account...`, {
+          id: "sync",
+        });
+
+        await api.get("/api/oauth/sync");
+
+        toast.success(
+          successMsg || "Account synced successfully!",
+          { id: "sync" }
+        );
+      }
+
+      const { data } = await api.get("/api/accounts");
+
+      console.log("Accounts:", data);
+
+      setAccounts(data);
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to load accounts"
+      );
+    }
   };
+
   useEffect(() => {
-    fetchAccounts();
+    const params = new URLSearchParams(window.location.search);
+
+    const connectedPlatform = params.get("connected");
+    const connectedUsername = params.get("username");
+    const syncNeeded = params.get("sync") === "true";
+    const errorMsg = params.get("error");
+
+    // Remove query params from URL
+    window.history.replaceState(
+      {},
+      document.title,
+      window.location.pathname
+    );
+
+    if (connectedPlatform) {
+      const label =
+        connectedPlatform.charAt(0).toUpperCase() +
+        connectedPlatform.slice(1);
+
+      const handle = connectedUsername
+        ? ` (@${connectedUsername})`
+        : "";
+
+      fetchAccounts(
+        syncNeeded,
+        connectedPlatform,
+        `${label}${handle} connected!`
+      );
+    } else if (errorMsg) {
+      toast.error(
+        `Connection failed: ${decodeURIComponent(errorMsg)}`
+      );
+      fetchAccounts();
+    } else {
+      fetchAccounts();
+    }
   }, []);
 
   const handleConnect = async (platformId: string) => {
-    setConnecting(platformId);
-    setTimeout(() => {
-      setConnecting(null);
-      setAccounts((prev) => [...prev, dummyAccountsData[0]]);
-      setShowPlatformPicker(false);
-    }, 1000);
+   
+      setConnecting(platformId);
+      console.log(platformId);
+      try {
+        const {data}=await api.get(`/api/oauth/${platformId}/url`)
+        console.log(data);
+        
+        window.location.href=data.url
+      } catch (error:any) {
+
+        toast.error(
+          error?.response?.data?.message ||
+            error?.message ||
+            `Failed to connect ${platformId}`
+          );
+          setConnecting(null)
+        
+      }
+
+      
   };
+
   const handleDisconnect = async (accountId: string) => {
-    setAccounts(accounts.filter((a) => a._id !== accountId));
+    try {
+      await api.delete(`/api/accounts/${accountId}`);
+      toast.success("Account disconnected")
+
+     await fetchAccounts()
+
+      
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to disconnect account"
+      );
+    }
   };
-  const connectedIds = accounts.map((a) => a.platform);
+
+  const connectedIds = accounts.map(
+    (account) => account.platform
+  );
+
   return (
     <div className="space-y-8 max-w-4xl">
       {/* Header */}
@@ -57,12 +154,21 @@ const Accounts = () => {
         </button>
       </div>
 
-      {/* Platform picker model */}
+      {/* Platform Picker Modal */}
+      {showPlatformPicker && (
+        <PlatformPIckerModel
+          connectedIds={connectedIds}
+          connecting={connecting}
+          onClose={() => setShowPlatformPicker(false)}
+          onConnect={handleConnect}
+        />
+      )}
 
-      {showPlatformPicker && <PlatformPIckerModel connectedIds={connectedIds} connecting={connecting} onClose={()=>setShowPlatformPicker(false)} onConnect={handleConnect}/> }
-
-      {/* connected accounts list */}
-      <AccountList accounts={accounts} onDisconnect={handleDisconnect} />
+      {/* Connected Accounts */}
+      <AccountList
+        accounts={accounts}
+        onDisconnect={handleDisconnect}
+      />
     </div>
   );
 };
