@@ -11,34 +11,52 @@ import { AuthRequest } from "../middleware/authMiddlewares.js";
 const getOrCreateZernioProfile = async (user: any) => {
   try {
     const result = await zernio.profiles.listProfiles();
+
     const data = result.data as any;
+
     const profiles = Array.isArray(data)
       ? data
       : data?.profiles || data?.data || [];
 
-    if (profiles.lengnth > 0) {
+    if (profiles.length > 0) {
       const profileId = profiles[0]._id || profiles[0].id;
 
-      await User.findByIdAndUpdate(user._id, { zernoiPtrofileId: profileId });
+      await User.findByIdAndUpdate(user._id, {
+        zernoiPtrofileId: profileId,
+      });
+
       return profileId;
     }
 
-    const createResult = zernio.profiles.createProfile({
-      body: { name: `${user.name}'s workspace` } as any,
+    const createResult = await zernio.profiles.createProfile({
+      body: {
+        name: `${user.name}'s workspace`,
+      } as any,
     });
 
-    const created = (createResult.data as any)?.profile || createResult.data;
+    const created =
+      (createResult.data as any)?.profile ||
+      createResult.data;
 
-    const profileId = created?._id || created.id;
+    const profileId = created?._id || created?.id;
 
-    await User.findByIdAndUpdate(user._id, { zernoiPtrofileId: profileId });
+    if (!profileId) {
+      throw new Error("Failed to create Zernio profile");
+    }
+
+    await User.findByIdAndUpdate(user._id, {
+      zernoiPtrofileId: profileId,
+    });
+
     return profileId;
   } catch (error: any) {
-    console.error("getOrCreateZernioProfile Error", error?.message || error);
+    console.error(
+      "getOrCreateZernioProfile Error",
+      error?.message || error
+    );
     throw error;
   }
 };
-
 //Generate OAuth authotization URl
 //GEt api/auth/:platform
 
@@ -75,7 +93,11 @@ export const generateAuthUrl = async (
     }
     res.json({ url: authUrl });
   } catch (error: any) {
-    res.status(500).json({ message: error.message || "server error" });
+    console.log("FULL ERROR =>", error);
+  
+    res.status(500).json({
+      message: error?.message || "Server Error ",
+    });
   }
 };
 
