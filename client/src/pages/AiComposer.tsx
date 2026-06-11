@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { dummyGenerationData, PLATFORMS } from "../assets/assets";
+import {  PLATFORMS } from "../assets/assets";
 import {
   ArrowRightIcon,
   CalendarIcon,
