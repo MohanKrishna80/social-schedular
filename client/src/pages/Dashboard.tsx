@@ -21,7 +21,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [postsRes, accountsRes, activityRes] = await Promise.all([api.get('/api/post'),api.get('/api/accounts'),api.get('/api/activity')])
+        const [postsRes, accountsRes, activityRes] = await Promise.all([api.get('/api/posts'),api.get('/api/accounts'),api.get('/api/activity')])
 
         const posts = postsRes.data;
 
@@ -29,7 +29,7 @@ const Dashboard = () => {
           scheduled: posts.filter((p:any) => p.status === "scheduled").length,
           published: posts.filter((p:any) => p.status === "published").length,
           connectedAccounts: accountsRes.data.filter(
-            (a) => a.status === "connected",
+            (a:any) => a.status === "connected",
           ).length,
         });
 

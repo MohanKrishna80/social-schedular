@@ -8,7 +8,7 @@ const postSchema = new mongoose.Schema(
     mediaUrl: { type: String },
     mediaType: { type: String, enum: ["image", "video"] },
     platforms: {
-      type: String,
+      type: [String],
       enum: [
         "twitter",
         "linkedin",

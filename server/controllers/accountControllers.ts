@@ -12,11 +12,21 @@ export const getAccounts = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const accounts = await Account.find({ user: req.user._id });
+    console.log("Current User:", req.user?._id);
+
+    const accounts = await Account.find({
+      user: req.user._id,
+    });
+
+    console.log("Accounts Found:", accounts);
 
     res.json(accounts);
   } catch (error: any) {
-    res.status(500).json({ message: error?.message || "server error" });
+    console.error(error);
+
+    res.status(500).json({
+      message: error?.message || "server error",
+    });
   }
 };
 
@@ -36,6 +46,8 @@ export const addAccounts = async (
       handle,
       avatarUrl,
     });
+
+    account.save()
 
     res.status(201).json(account);
   } catch (error: any) {

@@ -7,7 +7,7 @@ import { protect } from "../middleware/authMiddlewares.js";
 
 const socialAuthRouter = express.Router();
 
-socialAuthRouter.get("/:patform/url",protect, generateAuthUrl);
+socialAuthRouter.get("/:platform/url",protect, generateAuthUrl);
 socialAuthRouter.get("/sync", protect,syncAccounts);
 
 export default socialAuthRouter;

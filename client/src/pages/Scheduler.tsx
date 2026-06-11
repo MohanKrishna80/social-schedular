@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { dummyPostsData, PLATFORMS } from "../assets/assets";
+import { PLATFORMS } from "../assets/assets";
 import {
   ArrowRightIcon,
   CalendarDaysIcon,
@@ -8,6 +8,8 @@ import {
   SendIcon,
   XIcon,
 } from "lucide-react";
+import api from "../api/axios";
+import toast from "react-hot-toast";
 
 const Scheduler = () => {
   const [posts, setPosts] = useState<any[]>([]);
@@ -17,41 +19,133 @@ const Scheduler = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [mediaFile, setMediaFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const fetchPosts = async () => {
-    setPosts(dummyPostsData);
+    try {
+      const { data } = await api.get("/api/posts");
+      setPosts(data);
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to fetch posts"
+      );
+    }
   };
-  useEffect(() => {
-    async () => await fetchPosts();
 
-    const interval = setInterval(async () => {
-      await fetchPosts();
-    }, 1000);
+  useEffect(() => {
+    fetchPosts();
+
+    const interval = setInterval(fetchPosts, 10000);
 
     return () => clearInterval(interval);
   }, []);
 
-  const scheduled = posts.filter((p) => {
-    return p.status === "scheduled";
-  });
-  const published = posts.filter((p) => {
-   return p.status === "published";
-  });
+  const scheduled = posts.filter(
+    (post) => post.status === "scheduled"
+  );
 
-  const togglePlatform = (id: string) =>
+  const published = posts.filter(
+    (post) => post.status === "published"
+  );
+
+  const togglePlatform = (id: string) => {
     setSelectedPlatforms((prev) =>
-      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id],
+      prev.includes(id)
+        ? prev.filter((platform) => platform !== id)
+        : [...prev, id]
     );
+  };
 
   const handleSchedule = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (selectedPlatforms.length === 0) {
+      toast.error("Select at least one platform");
+      return;
+    }
+
+    if (!scheduledDate || !scheduledTime) {
+      toast.error("Select date and time");
+      return;
+    }
+
+    if (
+      selectedPlatforms.includes("instagram") &&
+      !mediaFile
+    ) {
+      toast.error("Instagram requires an image or video");
+      return;
+    }
+
+    const scheduledForDate = new Date(
+      `${scheduledDate}T${scheduledTime}`
+    );
+
+    if (scheduledForDate < new Date()) {
+      toast.error("Please select a future date and time");
+      return;
+    }
+
+    const formData = new FormData();
+
+    formData.append("content", content);
+    formData.append(
+      "scheduledFor",
+      scheduledForDate.toISOString()
+    );
+    formData.append("status", "scheduled");
+    formData.append(
+      "platforms",
+      JSON.stringify(selectedPlatforms)
+    );
+
+    if (mediaFile) {
+      formData.append("media", mediaFile);
+    }
+
     setLoading(true);
-    setTimeout(() => {
+
+    try {
+      await api.post("/api/posts", formData);
+
+      toast.success("Post scheduled!");
+
+      setContent("");
+      setScheduledDate("");
+      setScheduledTime("");
+      setSelectedPlatforms([]);
+      setMediaFile(null);
+
+      await fetchPosts();
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Something went wrong"
+      );
+    } finally {
       setLoading(false);
-      setPosts((prev) => [...prev, dummyPostsData[0]]);
-    }, 1000);
+    }
   };
 
+  const handleGenerateAI = async () => {
+    try {
+      setIsGenerating(true);
+  
+      const { data } = await api.post("/api/content/generate-content", {
+        prompt: content,
+      });
+  
+      setContent(data.content);
+      toast.success("Content generated successfully");
+    } catch (error) {
+      toast.error("Failed to generate content");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
   return (
     <div className="flex flex-col lg:flex-row gap-6 h-full">
       {/* Compose Panel */}
@@ -94,27 +188,40 @@ const Scheduler = () => {
             {/* Content */}
 
             <div>
-              <label className="block text-xs text-slate-500 uppercase mb-2">
-                Content
-              </label>
+  <label className="block text-xs text-slate-500 uppercase mb-2">
+    Content
+  </label>
 
-              <textarea
-                required
-                rows={5}
-                placeholder="What do you want to share today?"
-                className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 text-sm placeholder-slate-400 outline-none resize-none"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-              />
+  <div className="space-y-3">
+    <textarea
+      required
+      rows={5}
+      placeholder="What do you want to share today?"
+      className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 text-sm placeholder-slate-400 outline-none resize-none"
+      value={content}
+      onChange={(e) => setContent(e.target.value)}
+    />
 
-              <div
-                className={`text-right text-xs mt-1 font-medium ${
-                  content.length > 270 ? "text-red-500" : "text-slate-400"
-                }`}
-              >
-                {content.length}/280
-              </div>
-            </div>
+    <div className="flex items-center justify-between">
+      <button
+        type="button"
+        onClick={handleGenerateAI}
+        disabled={isGenerating || !content.trim()}
+        className="px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+      >
+        {isGenerating ? "Generating..." : "✨ Generate with AI"}
+      </button>
+
+      <div
+        className={`text-xs font-medium ${
+          content.length > 1900? "text-red-500" : "text-slate-400"
+        }`}
+      >
+        {content.length}/2000
+      </div>
+    </div>
+  </div>
+</div>
 
             {/* Media upload */}
             <div>
@@ -146,12 +253,14 @@ const Scheduler = () => {
                   </button>
                 </div>
               ) : (
-                <label className="flex items-center justify-center gap-2 p-5 py-10 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-red-300 hover:bg-red-50/30 transition-all group">
-                  {/* Content goes here */}
-                  <span className="text-sm text-slate-500 group-hover:text-red-600 transition-colors">
-                    click to upload image or video
-                  </span>
-                </label>
+                <label
+                htmlFor="media-upload"
+                className="flex items-center justify-center gap-2 p-5 py-10 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-red-300 hover:bg-red-50/30 transition-all group"
+              >
+                <span className="text-sm text-slate-500 group-hover:text-red-600 transition-colors">
+                  Click to upload image or video
+                </span>
+              </label>
               )}
 
               <input

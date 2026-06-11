@@ -13,7 +13,7 @@ export const getActivity = async (
     const activity = await ActivityLog.find({ user: req.user._id })
       .sort({ createdAt: -1 })
       .limit(0)
-      .populate("relatedPosts", "content");
+      .populate("relatedPost", "content");
     res.json(activity);
   } catch (error: any) {
     res.status(500).json({ messgae: error?.message || "server error" });

@@ -72,6 +72,7 @@ export const generateAuthUrl = async (
     const origin = req.headers.origin;
 
     const redirectUrl = `${origin}/accounts`;
+    console.log("Platform:", platform);
     const result = await zernio.connect.getConnectUrl({
       path: { platform: platform as any },
       query: {
@@ -109,59 +110,145 @@ export const syncAccounts = async (
   res: Response,
 ): Promise<void> => {
   try {
+    console.log("========== SYNC START ==========");
+    console.log("Authenticated User:", req.user);
+    console.log("User ID:", req.user?._id);
+
     const profileId = await getOrCreateZernioProfile(req.user);
+
+    console.log("Profile ID:", profileId);
 
     const result = await zernio.accounts.listAccounts({
       query: { profileId } as any,
     });
+
     const data = result.data as any;
-    const zernioAccounts: any[] =
-      data?.accounts || Array.isArray(data) ? data : [];
-    const supportedPlatforms = ["twitter", "linkedin", "facebook", "instagram"];
+
+    console.log(
+      "Raw Zernio Response:",
+      JSON.stringify(data, null, 2)
+    );
+
+    const zernioAccounts = Array.isArray(data)
+      ? data
+      : data?.accounts || [];
+
+    console.log("Total Accounts From Zernio:", zernioAccounts.length);
+    console.log(
+      "Zernio Accounts:",
+      JSON.stringify(zernioAccounts, null, 2)
+    );
+
+    const supportedPlatforms = [
+      "twitter",
+      "linkedin",
+      "facebook",
+      "instagram",
+    ];
+
     const syncedAccounts = [];
 
     for (const zAccount of zernioAccounts) {
+      console.log("================================");
+      console.log(
+        "Processing Raw Account:",
+        JSON.stringify(zAccount, null, 2)
+      );
+
       const zId = zAccount._id || zAccount.id;
 
+      console.log("Zernio Account ID:", zId);
+
       if (!zId) {
-        console.warn("Skipping account with no ID:", zAccount);
+        console.warn(
+          "Skipping account because no account ID was found",
+        );
         continue;
       }
 
-      const rawPlatforms = (
+      const rawPlatform = (
         zAccount.platform ||
         zAccount.type ||
         ""
-      ).toLowerCase();
+      )
+        .toString()
+        .toLowerCase();
 
-      const normalizedPlaforms = supportedPlatforms.find((p) =>
-        rawPlatforms.includes(p),
+      console.log("Raw Platform:", rawPlatform);
+
+      const normalizedPlatform = supportedPlatforms.find((p) =>
+        rawPlatform.includes(p),
       );
-      if (!normalizedPlaforms) {
-        console.log(`Skipping unsupported platform:"${rawPlatforms}"`);
+
+      console.log(
+        "Normalized Platform:",
+        normalizedPlatform,
+      );
+
+      if (!normalizedPlatform) {
+        console.log(
+          `Skipping unsupported platform: "${rawPlatform}"`
+        );
         continue;
       }
 
-      const account = await Account.findOneAndUpdate(
-        { zernoiAccountId: zId },
-        {
-          user: req.user._id,
-          platform: supportedPlatforms,
-          handle:
-            zAccount.username || zAccount.name || zAccount.handle || "Unknown",
-          zernoiAccountId: zId,
-          status: "connected",
-          avatarUrl:
-            zAccount.avatarUrl ||
-            zAccount.picture ||
-            zAccount.profile_image_url,
-        },
-        { upsert: true, returnDocument: "after" },
+      const updatePayload = {
+        user: req.user._id,
+        platform: normalizedPlatform,
+        handle:
+          zAccount.username ||
+          zAccount.name ||
+          zAccount.handle ||
+          "Unknown",
+        zernoiAccountId: zId,
+        status: "connected",
+        avatarUrl:
+          zAccount.avatarUrl ||
+          zAccount.picture ||
+          zAccount.profile_image_url ||
+          "",
+      };
+
+      console.log(
+        "Saving Account Payload:",
+        JSON.stringify(updatePayload, null, 2)
       );
+
+      const account = await Account.findOneAndUpdate(
+        {
+          zernoiAccountId: zId,
+        },
+        updatePayload,
+        {
+          upsert: true,
+          new: true,
+        },
+      );
+
+      console.log("Saved Account:", account);
+
       syncedAccounts.push(account);
     }
-    res.json(syncedAccounts);
+
+    const allAccounts = await Account.find({});
+
+    console.log("================================");
+    console.log(
+      "ALL ACCOUNTS IN DATABASE:",
+      JSON.stringify(allAccounts, null, 2)
+    );
+    console.log(
+      `Successfully synced ${syncedAccounts.length} account(s)`
+    );
+    console.log("========== SYNC END ==========");
+
+    res.status(200).json(syncedAccounts);
   } catch (error: any) {
-    res.status(500).json({ message: error.message || "server error" });
+    console.error("========== SYNC ERROR ==========");
+    console.error(error);
+
+    res.status(500).json({
+      message: error?.message || "Server Error",
+    });
   }
 };

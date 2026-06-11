@@ -11,22 +11,44 @@ export const protect = async (
   res: Response,
   next: NextFunction,
 ) => {
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    try {
-      token = req.headers.authorization.split(" ")[1];
-      const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
-      req.user = User.findById(decoded.id).select("-password");
-      next();
-    } catch (error: any) {
-      res
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (
+      !authHeader ||
+      !authHeader.startsWith("Bearer ")
+    ) {
+      return res
         .status(401)
-        .json({ message: error.message || "Not authorized, Token failed" });
+        .json({ message: "Not authorized, no token" });
     }
-  } else {
-    res.status(401).json({ message: "Not authorized, no Token " });
+
+    const token = authHeader.split(" ")[1];
+
+    const decoded: any = jwt.verify(
+      token,
+      process.env.JWT_SECRET!
+    );
+
+    const user = await User.findById(decoded.id).select(
+      "-password"
+    );
+
+    if (!user) {
+      return res
+        .status(401)
+        .json({ message: "User not found" });
+    }
+
+    req.user = user;
+
+    console.log("Authenticated User:", user._id);
+
+    next();
+  } catch (error: any) {
+    return res.status(401).json({
+      message:
+        error?.message || "Not authorized, token failed",
+    });
   }
 };
