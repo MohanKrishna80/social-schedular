@@ -21,23 +21,21 @@ const Accounts = () => {
         const label = platform
           ? platform.charAt(0).toUpperCase() + platform.slice(1)
           : "Social Media";
-
+  
         toast.loading(`Syncing ${label} account...`, {
           id: "sync",
         });
-
+  
         await api.get("/api/oauth/sync");
-
+  
         toast.success(
           successMsg || "Account synced successfully!",
           { id: "sync" }
         );
       }
-
+  
       const { data } = await api.get("/api/accounts");
-
-      console.log("Accounts:", data);
-
+  
       setAccounts(data);
     } catch (error: any) {
       toast.error(
@@ -47,33 +45,28 @@ const Accounts = () => {
       );
     }
   };
-
+  
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-
+  
     const connectedPlatform = params.get("connected");
     const connectedUsername = params.get("username");
-    const syncNeeded = params.get("sync") === "true";
+    const accountId = params.get("accountId");
     const errorMsg = params.get("error");
-
-    // Remove query params from URL
-    window.history.replaceState(
-      {},
-      document.title,
-      window.location.pathname
-    );
-
+  
+    const shouldSync = !!accountId;
+  
     if (connectedPlatform) {
       const label =
         connectedPlatform.charAt(0).toUpperCase() +
         connectedPlatform.slice(1);
-
+  
       const handle = connectedUsername
         ? ` (@${connectedUsername})`
         : "";
-
+  
       fetchAccounts(
-        syncNeeded,
+        shouldSync,
         connectedPlatform,
         `${label}${handle} connected!`
       );
@@ -81,10 +74,17 @@ const Accounts = () => {
       toast.error(
         `Connection failed: ${decodeURIComponent(errorMsg)}`
       );
+  
       fetchAccounts();
     } else {
       fetchAccounts();
     }
+  
+    window.history.replaceState(
+      {},
+      document.title,
+      window.location.pathname
+    );
   }, []);
 
   const handleConnect = async (platformId: string) => {

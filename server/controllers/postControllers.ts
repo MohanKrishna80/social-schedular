@@ -9,6 +9,8 @@ import { resolve } from "node:dns";
 
 //hleper to call leonardo ai
 
+
+
 const leonardoJob = async (
   generationId: string,
   apiKey: string,
@@ -18,9 +20,12 @@ const leonardoJob = async (
 
   for (let i = 0; i < maxRetries; i++) {
     try {
-      const responce = await axios.get(
-        `
-        https://cloud.leonardo.ai/api/rest/v1/generations/${generationId}`,
+      console.log(
+        `Checking Leonardo generation ${generationId} (Attempt ${i + 1}/${maxRetries})`,
+      );
+
+      const response = await axios.get(
+        `https://cloud.leonardo.ai/api/rest/v1/generations/${generationId}`,
         {
           headers: {
             Accept: "application/json",
@@ -29,27 +34,49 @@ const leonardoJob = async (
         },
       );
 
-      const generation = responce.data.generations_by_pk;
+      const generation = response.data?.generations_by_pk;
+
+      if (!generation) {
+        throw new Error("No generation data returned from Leonardo");
+      }
+
+      console.log("Generation Status:", generation.status);
+
       if (generation.status === "COMPLETE") {
+        console.log(
+          "Generation Complete:",
+          JSON.stringify(generation, null, 2),
+        );
+
         if (
-          generation.generatedImage &&
+          generation.generated_images &&
           generation.generated_images.length > 0
         ) {
           return generation.generated_images[0].url;
         }
-        throw new Error("Generation complete but no image found");
+
+        throw new Error("Generation completed but no image URL found");
       }
+
       if (generation.status === "FAILED") {
-        throw new Error("Leonardo ai generation failed");
+        throw new Error("Leonardo AI generation failed");
       }
+
+      console.log("Generation still processing...");
     } catch (error: any) {
-      console.error("Polling Error:", error?.responce?.data || error.message);
+      console.error(
+        "Polling Error:",
+        error?.response?.data || error?.message || error,
+      );
     }
 
-    await new Promise((resolve)=>setTimeout(resolve,delay))
+    await new Promise((resolve) => setTimeout(resolve, delay));
   }
-  throw new Error("Leonardo.ai generation timed out  ")
+
+  throw new Error("Leonardo AI generation timed out");
 };
+
+export default leonardoJob;
 
 // Generate posts
 //POST /api/posts/generate
@@ -161,6 +188,7 @@ export const generatePost = async (
       prompt,
       content,
       mediaUrl,
+      
       mediaType: mediaUrl ? "image" : undefined,
     });
 
@@ -212,43 +240,42 @@ export const schedulePost = async (
   try {
     const { content, platforms, scheduledFor, status } = req.body;
 
-    //Parse platforms if it comes as a stringified array from FormData
-
     let parsedPlatforms = platforms;
 
     if (typeof platforms === "string") {
       try {
         parsedPlatforms = JSON.parse(platforms);
-      } catch (e) {
+      } catch {
         parsedPlatforms = platforms.split(",");
       }
     }
-    let mediaUrl: string | undefined = req.body.mediaUrl;
 
+    let mediaUrl: string | undefined = req.body.mediaUrl;
     let mediaType: "image" | "video" | undefined = req.body.mediaType;
 
     if (req.file) {
-      const result = await new Promise<any>((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          {
-            resource_type: "auto",
-            folder: "social-scheduler",
-          },
-          (error, result) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve(result);
-            }
-          },
-        );
-
-        stream.end(req.file!.buffer);
-      });
-
-      mediaUrl = result.secure_url;
-      mediaType = result.resource_type === "video" ? "video" : "image";
+      const uploadResult = await cloudinary.uploader.upload(
+        `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+        {
+          resource_type: "image",
+        }
+      );
+    
+      console.log("UPLOAD RESULT:", uploadResult);
+    
+      mediaUrl = uploadResult.secure_url;
+      mediaType = "image";
     }
+    console.log("REQ BODY:", req.body);
+
+console.log({
+  content,
+  platforms: parsedPlatforms,
+  scheduledFor,
+  status,
+  mediaUrl,
+  mediaType,
+});
 
     const post = await Post.create({
       user: req.user._id,
@@ -259,8 +286,13 @@ export const schedulePost = async (
       scheduledFor,
       status,
     });
+
     res.status(201).json(post);
   } catch (error: any) {
-    res.status(500).json({ messgae: error?.message || "server error" });
+    console.error("SCHEDULE POST ERROR:", error);
+
+    res.status(500).json({
+      message: error?.message || "Server Error",
+    });
   }
 };
