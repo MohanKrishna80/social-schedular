@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { MailIcon, LockIcon, ArrowRightIcon, User2Icon } from "lucide-react";
+import {
+  MailIcon,
+  LockIcon,
+  ArrowRightIcon,
+  User2Icon,
+  LoaderCircle,
+} from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
 import toast from "react-hot-toast";
@@ -117,7 +123,10 @@ export default function Login() {
               className="w-full py-2.5 px-4 bg-linear-to-r from-red-600 to-red-500 text-white rounded-full text-sm transition-all disabled:opacity-60 flex items-center justify-center gap-2"
             >
               {loading ? (
-                "Signing in..."
+                <>
+                  <LoaderCircle className="size-4 animate-spin" />
+                  {loginState ? "Signing in..." : "Signing up..."}
+                </>
               ) : (
                 <>
                   {loginState ? "Sign In" : "Sign Up"}{" "}
