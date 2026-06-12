@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
+
 import {  PLATFORMS } from "../assets/assets";
+
+
+
 import {
   ArrowRightIcon,
   CalendarIcon,
@@ -131,13 +135,13 @@ console.log({
       {/* Input Section */}
 
       <div className="space-y-6 text-center mt-20">
-        <h1 className="text-3xl text-slate-700 tracking-tight">
+        <h1 className="text-3xl text-slate-700 tracking-tight dark:text-slate-100">
           What should we create today?
         </h1>
 
         <div className="relative group mt-12">
           <textarea
-            className="w-full h-40 px-6 py-6 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 outline-none resize-none transition focus:border-slate-400"
+            className="w-full h-40 px-6 py-6 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 outline-none resize-none transition focus:border-slate-400 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-slate-500"
             placeholder="Share your idea... (e.g. A post about the launch of our new eco-friendly coffee beans)"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
@@ -147,13 +151,13 @@ console.log({
             <button
               type="button"
               onClick={() => setGenerateImage(!generateImage)}
-              className="flex items-center gap-2 bg-red-100 px-3 py-2 rounded-lg"
+              className="flex items-center gap-2 bg-red-100 px-3 py-2 rounded-lg dark:bg-red-500/10 dark:text-red-100"
             >
               <span>AI Image</span>
 
               <div
                 className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none ${
-                  generateImage ? "bg-red-500" : "bg-slate-200"
+                  generateImage ? "bg-red-500" : "bg-slate-200 dark:bg-slate-700"
                 }`}
               >
                 <span
@@ -167,7 +171,7 @@ console.log({
             <button
               onClick={handleGenerate}
               disabled={loading}
-              className="bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-2 px-4 py-2 rounded-lg"
+              className="bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-2 px-4 py-2 rounded-lg dark:bg-red-500 dark:hover:bg-red-600"
             >
               {loading ? (
                 <>
@@ -192,7 +196,7 @@ console.log({
               className={`px-4 py-1.5 rounded-lg text-sm transition-all border ${
                 tone === t
                   ? "bg-red-500 border-red-500 text-white"
-                  : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
+                  : "bg-white border-slate-200 text-slate-500 hover:border-slate-300 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-600"
               }`}
             >
               {t}
@@ -202,14 +206,14 @@ console.log({
       </div>
 
       {/* AI Generated Posts */}
-      <div className="space-y-6 pt-12 border-t border-slate-100">
-        <div className="flex items-center justify-between text-slate-600">
+      <div className="space-y-6 pt-12 border-t border-slate-100 dark:border-slate-800">
+        <div className="flex items-center justify-between text-slate-600 dark:text-slate-300">
           <div className="flex items-center gap-2">
             <HistoryIcon className="size-5" />
             <h2 className="text-xl">Recent Generations</h2>
           </div>
 
-          <span className="text-sm text-slate-500 bg-slate-50 px-2 py-1 rounded">
+          <span className="text-sm text-slate-500 bg-slate-50 px-2 py-1 rounded dark:bg-slate-900 dark:text-slate-400">
             {generations.length} Generations
           </span>
         </div>
@@ -218,23 +222,23 @@ console.log({
           {generations.map((gen) => (
             <div
               key={gen._id}
-              className="group bg-white rounded-2xl border border-slate-100 p-5 hover:border-red-200 transition-all relative overflow-hidden"
+              className="group bg-white rounded-2xl border border-slate-100 p-5 hover:border-red-200 transition-all relative overflow-hidden dark:bg-slate-900 dark:border-slate-800 dark:hover:border-red-500/30"
             >
               <div className="flex flex-col h-full space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-400 uppercase tracking-widest">
+                  <span className="text-xs text-slate-400 uppercase tracking-widest dark:text-slate-500">
                     {new Date(gen.createdAt).toLocaleString()}
                   </span>
 
-                  <span className="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded-md">
+                  <span className="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded-md dark:bg-red-500/10 dark:text-red-300">
                     {gen.tone}
                   </span>
                 </div>
-                <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed flex-1">
+                <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed flex-1 dark:text-slate-300">
                   {gen.content}
                 </p>
                 {gen.mediaUrl && (
-                  <div className="rounded-xl overflow-hidden border border-slate-50 bg-slate-50">
+                  <div className="rounded-xl overflow-hidden border border-slate-50 bg-slate-50 dark:border-slate-800 dark:bg-slate-950">
                     <img
                       src={gen.mediaUrl}
                       alt="Gen"
@@ -245,7 +249,7 @@ console.log({
                 <div className="flex items-center gap-2 pt-2">
                   <button
                     onClick={() => setActiveScheduler(gen)}
-                    className="flex-1 bg-slate-100 hover:bg-red-500 hover:text-white text-slate-600 text-xs py-2.5 rounded-lg transition-all"
+                    className="flex-1 bg-slate-100 hover:bg-red-500 hover:text-white text-slate-600 text-xs py-2.5 rounded-lg transition-all dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-red-500 dark:hover:text-white"
                   >
                     Schedule Post
                   </button>
@@ -255,11 +259,11 @@ console.log({
           ))}
           {generations.length === 0 && (
             <div className="col-span-full py-20 text-center space-y-2">
-              <div className="size-12 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-slate-300">
+              <div className="size-12 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-slate-300 dark:bg-slate-900 dark:text-slate-600">
                 <Wand2Icon className="size-6" />
               </div>
 
-              <p className="text-slate-400 text-sm">
+              <p className="text-slate-400 text-sm dark:text-slate-500">
                 No content generated yet. Try generating some content using the
                 AI.
               </p>
@@ -272,13 +276,13 @@ console.log({
 
       {activeScheduler && (
         <div className="fixed inset-0 min-h-screen z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between px-8 py-4 border-b border-slate-100 bg-slate-50/30">
-              <h3 className="text-slate-900">Schedule Generation</h3>
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh] dark:bg-slate-900 dark:border-slate-800">
+            <div className="flex items-center justify-between px-8 py-4 border-b border-slate-100 bg-slate-50/30 dark:bg-slate-950/60 dark:border-slate-800">
+              <h3 className="text-slate-900 dark:text-slate-100">Schedule Generation</h3>
 
               <button
                 onClick={() => setActiveScheduler(null)}
-                className="p-2 rounded-full hover:bg-slate-100 text-slate-400 transition-colors"
+                className="p-2 rounded-full hover:bg-slate-100 text-slate-400 transition-colors dark:hover:bg-slate-800 dark:text-slate-500"
               >
                 <XIcon className="size-5" />
               </button>
@@ -287,14 +291,14 @@ console.log({
             {/* Modal Content  */}
 
             <div className="flex-1 overflow-y-auto p-8 space-y-4">
-              <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 space-y-4">
-                <p className="text-slate-800 text-sm leading-relaxed whitespace-pre-wrap">
+              <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 space-y-4 dark:bg-slate-950 dark:border-slate-800">
+                <p className="text-slate-800 text-sm leading-relaxed whitespace-pre-wrap dark:text-slate-300">
                   {activeScheduler.prompt}
                 </p>
               </div>
 
-              <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 space-y-4">
-                <p className="text-slate-800 text-sm leading-relaxed whitespace-pre-wrap">
+              <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 space-y-4 dark:bg-slate-950 dark:border-slate-800">
+                <p className="text-slate-800 text-sm leading-relaxed whitespace-pre-wrap dark:text-slate-300">
                   {activeScheduler.content}
                 </p>
 
@@ -302,17 +306,17 @@ console.log({
                   <img
                     src={activeScheduler.mediaUrl}
                     alt="preview"
-                    className="w-full aspect-video object-cover rounded-xl border border-slate-200 shadow-sm"
+                    className="w-full aspect-video object-cover rounded-xl border border-slate-200 shadow-sm dark:border-slate-700"
                   />
                 )}
               </div>
             </div>
 
-            <div className="p-8 bg-slate-50/50 border-t border-slate-50 space-y-8">
+            <div className="p-8 bg-slate-50/50 border-t border-slate-50 space-y-8 dark:bg-slate-950/60 dark:border-slate-800">
               {/* Options */}
               <div className="space-y-6">
                 <div>
-                  <label className="block text-xs text-slate-600 uppercase tracking-widest mb-4">
+                  <label className="block text-xs text-slate-600 uppercase tracking-widest mb-4 dark:text-slate-400">
                     Select Channels
                   </label>
 
@@ -333,7 +337,7 @@ console.log({
                           className={`p-2.5 rounded-md border text-xs ${
                             active
                               ? "bg-red-500/80 text-white border-red-500"
-                              : "bg-white border-slate-200 text-slate-400 hover:border-slate-300"
+                              : "bg-white border-slate-200 text-slate-400 hover:border-slate-300 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-400 dark:hover:border-slate-600"
                           }`}
                         >
                           <p.icon className="size-4.5" />
@@ -348,7 +352,7 @@ console.log({
 
                     <input
                       type="date"
-                      className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-md text-slate-900 text-sm focus:outline-none transition-all"
+                      className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-md text-slate-900 text-sm focus:outline-none transition-all dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100"
                       value={scheduledDate}
                       onChange={(e) => setScheduledDate(e.target.value)}
                     />
@@ -358,7 +362,7 @@ console.log({
 
                     <input
                       type="time"
-                      className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-md text-slate-900 text-sm focus:outline-none transition-all"
+                      className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-md text-slate-900 text-sm focus:outline-none transition-all dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100"
                       value={scheduledTime}
                       onChange={(e) => setScheduledTime(e.target.value)}
                     />
@@ -367,7 +371,7 @@ console.log({
               </div>
               <button
                 onClick={handleSchedule}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-md bg-slate-200 text-slate-700 hover:bg-red-500 hover:text-white transition"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-md bg-slate-200 text-slate-700 hover:bg-red-500 hover:text-white transition dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-red-500"
               >
                 {scheduling ? (
                   <Loader2Icon className="size-4 animate-spin" />

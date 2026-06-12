@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { MailIcon, LockIcon, ArrowRightIcon, User2Icon,LoaderCircle  } from "lucide-react";
+import {
+  MailIcon,
+  LockIcon,
+  ArrowRightIcon,
+  User2Icon,
+  LoaderCircle,
+} from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
 import toast from "react-hot-toast";
+import ThemeToggle from "../components/ThemeToggle";
 
 export default function Login() {
   const [loginState, setLoginState] = useState(true);
@@ -53,15 +60,18 @@ export default function Login() {
   }, [user]);
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
+      </div>
       <div className="relative w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-sm p-8">
+        <div className="bg-white rounded-2xl shadow-sm p-8 dark:bg-slate-900 dark:border dark:border-slate-800">
           <div className="flex flex-col items-center mb-8">
             <Link to="/" className="flex items-center gap-2">
               <img src="/logo.svg" alt="Logo" className="size-6.5" />
               <h1 className="text-2xl">Scheduler</h1>
             </Link>
-            <p className="text-slate-500 text-sm mt-1">
+            <p className="text-slate-500 text-sm mt-1 dark:text-slate-400">
               Sign in to your Dashboard
             </p>
           </div>
@@ -75,7 +85,7 @@ export default function Login() {
                     type="text"
                     required
                     placeholder="Enter your name"
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 outline-slate-300 border border-slate-200 rounded-full"
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 outline-slate-300 border border-slate-200 rounded-full dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-500 dark:outline-slate-600"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
@@ -90,7 +100,7 @@ export default function Login() {
                   type="email"
                   required
                   placeholder="you@company.com"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 outline-slate-300 border border-slate-200 rounded-full"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 outline-slate-300 border border-slate-200 rounded-full dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-500 dark:outline-slate-600"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -104,7 +114,7 @@ export default function Login() {
                   type="password"
                   required
                   placeholder="********"
-                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 outline-slate-300 border border-slate-200 rounded-full"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 outline-slate-300 border border-slate-200 rounded-full dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-500 dark:outline-slate-600"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -130,7 +140,7 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="mt-6 text-center text-sm text-slate-500">
+          <div className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
             {loginState ? (
               <>
                 Don't have an account?{" "}

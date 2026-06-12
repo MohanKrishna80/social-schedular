@@ -42,14 +42,14 @@ const features = [
 
 export default function Features() {
     return (
-        <section id="features" className="py-24 bg-slate-50">
+        <section id="features" className="py-24 bg-slate-50 dark:bg-slate-900">
             <div className="max-w-6xl mx-auto px-4 sm:px-6">
                 <div className="text-center mb-16">
                     <div className="mb-6 inline-flex items-center gap-1.5 bg-red-500/10 border border-red-500/15 text-red-500 text-[11px] font-medium tracking-[0.06em] uppercase px-3.5 py-1.5 rounded-full">
                         <ZapIcon className="size-3" />
                         Everything you need
                     </div>
-                    <h2 className="font-serif text-4xl sm:text-5xl font-medium leading-tight text-gray-900">
+                    <h2 className="font-serif text-4xl sm:text-5xl font-medium leading-tight text-gray-900 dark:text-slate-100">
                         Automate your entire
                         <br />
                         <span className="text-red-400 italic">social media workflow</span>
@@ -59,12 +59,12 @@ export default function Features() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                     {features.map((f) => (
-                        <div key={f.title} className="bg-white rounded-2xl border border-slate-100 p-6 hover:border-slate-200 hover:shadow-md hover:shadow-slate-100 group">
+                        <div key={f.title} className="bg-white rounded-2xl border border-slate-100 p-6 hover:border-slate-200 hover:shadow-md hover:shadow-slate-100 group dark:bg-slate-950 dark:border-slate-800 dark:hover:border-slate-700 dark:hover:shadow-none">
                             <div className={`size-10 rounded-xl flex items-center justify-center mb-4 ${f.color}`}>
                                 <f.icon className="size-5" />
                             </div>
-                            <h3 className=" text-slate-900 mb-2">{f.title}</h3>
-                            <p className="text-sm text-slate-500/90 leading-relaxed">{f.description}</p>
+                            <h3 className=" text-slate-900 mb-2 dark:text-slate-100">{f.title}</h3>
+                            <p className="text-sm text-slate-500/90 leading-relaxed dark:text-slate-400">{f.description}</p>
                         </div>
                     ))}
                 </div>
