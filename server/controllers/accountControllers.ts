@@ -12,17 +12,17 @@ export const getAccounts = async (
   res: Response,
 ): Promise<void> => {
   try {
-    console.log("Current User:", req.user?._id);
+   
 
     const accounts = await Account.find({
       user: req.user._id,
     });
 
-    console.log("Accounts Found:", accounts);
+    
 
     res.json(accounts);
   } catch (error: any) {
-    console.error(error);
+   
 
     res.status(500).json({
       message: error?.message || "server error",
