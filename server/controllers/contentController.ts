@@ -36,7 +36,7 @@ ${prompt}
       content: response.text,
     });
   } catch (error) {
-    console.error(error);
+   
     res.status(500).json({
       message: "Failed to generate content",
     });
