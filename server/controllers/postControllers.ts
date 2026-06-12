@@ -20,9 +20,7 @@ const leonardoJob = async (
 
   for (let i = 0; i < maxRetries; i++) {
     try {
-      console.log(
-        `Checking Leonardo generation ${generationId} (Attempt ${i + 1}/${maxRetries})`,
-      );
+     
 
       const response = await axios.get(
         `https://cloud.leonardo.ai/api/rest/v1/generations/${generationId}`,
@@ -40,13 +38,11 @@ const leonardoJob = async (
         throw new Error("No generation data returned from Leonardo");
       }
 
-      console.log("Generation Status:", generation.status);
+      
 
       if (generation.status === "COMPLETE") {
         console.log(
-          "Generation Complete:",
-          JSON.stringify(generation, null, 2),
-        );
+        
 
         if (
           generation.generated_images &&
@@ -62,7 +58,7 @@ const leonardoJob = async (
         throw new Error("Leonardo AI generation failed");
       }
 
-      console.log("Generation still processing...");
+      
     } catch (error: any) {
       console.error(
         "Polling Error:",
