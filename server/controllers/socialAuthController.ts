@@ -72,7 +72,7 @@ export const generateAuthUrl = async (
     const origin = req.headers.origin;
 
     const redirectUrl = `${origin}/accounts`;
-    console.log("Platform:", platform);
+  
     const result = await zernio.connect.getConnectUrl({
       path: { platform: platform as any },
       query: {
@@ -83,7 +83,7 @@ export const generateAuthUrl = async (
 
     const data = result.data as any;
 
-    console.log("getconnectUrl Responce:", JSON.stringify(data, null, 2));
+    
 
     const authUrl = data.authUrl;
 
@@ -94,7 +94,7 @@ export const generateAuthUrl = async (
     }
     res.json({ url: authUrl });
   } catch (error: any) {
-    console.log("FULL ERROR =>", error);
+   
   
     res.status(500).json({
       message: error?.message || "Server Error ",
@@ -116,7 +116,7 @@ export const syncAccounts = async (
 
     const profileId = await getOrCreateZernioProfile(req.user);
 
-    console.log("Profile ID:", profileId);
+    
 
     const result = await zernio.accounts.listAccounts({
       query: { profileId } as any,
@@ -124,19 +124,13 @@ export const syncAccounts = async (
 
     const data = result.data as any;
 
-    console.log(
-      "Raw Zernio Response:",
-      JSON.stringify(data, null, 2)
-    );
+  
 
     const zernioAccounts = Array.isArray(data)
       ? data
       : data?.accounts || [];
 
-    console.log("Total Accounts From Zernio:", zernioAccounts.length);
-    console.log(
-      "Zernio Accounts:",
-      JSON.stringify(zernioAccounts, null, 2)
+    
     );
 
     const supportedPlatforms = [
@@ -149,11 +143,7 @@ export const syncAccounts = async (
     const syncedAccounts = [];
 
     for (const zAccount of zernioAccounts) {
-      console.log("================================");
-      console.log(
-        "Processing Raw Account:",
-        JSON.stringify(zAccount, null, 2)
-      );
+     
 
       const zId = zAccount._id || zAccount.id;
 
@@ -174,7 +164,7 @@ export const syncAccounts = async (
         .toString()
         .toLowerCase();
 
-      console.log("Raw Platform:", rawPlatform);
+      
 
       const normalizedPlatform = supportedPlatforms.find((p) =>
         rawPlatform.includes(p),
@@ -209,10 +199,7 @@ export const syncAccounts = async (
           "",
       };
 
-      console.log(
-        "Saving Account Payload:",
-        JSON.stringify(updatePayload, null, 2)
-      );
+     
 
       const account = await Account.findOneAndUpdate(
         {
@@ -225,27 +212,17 @@ export const syncAccounts = async (
         },
       );
 
-      console.log("Saved Account:", account);
+      
 
       syncedAccounts.push(account);
     }
 
     const allAccounts = await Account.find({});
 
-    console.log("================================");
-    console.log(
-      "ALL ACCOUNTS IN DATABASE:",
-      JSON.stringify(allAccounts, null, 2)
-    );
-    console.log(
-      `Successfully synced ${syncedAccounts.length} account(s)`
-    );
-    console.log("========== SYNC END ==========");
-
+   
     res.status(200).json(syncedAccounts);
   } catch (error: any) {
-    console.error("========== SYNC ERROR ==========");
-    console.error(error);
+    
 
     res.status(500).json({
       message: error?.message || "Server Error",
