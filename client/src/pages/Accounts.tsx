@@ -136,11 +136,11 @@ const Accounts = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl text-slate-900 font-semibold">
+          <h2 className="text-xl text-slate-900 font-semibold dark:text-slate-100">
             Connected Accounts
           </h2>
 
-          <p className="text-slate-500 text-sm mt-0.5">
+          <p className="text-slate-500 text-sm mt-0.5 dark:text-slate-400">
             {accounts.length} of {PLATFORMS.length} platforms connected
           </p>
         </div>

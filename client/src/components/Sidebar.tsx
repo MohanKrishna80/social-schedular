@@ -29,19 +29,20 @@ const Sidebar = ({
   return (
     <div
       className={`fixed inset-y-0 left-0 z-50 w-64 border-slate-200 bg-white border-r flex flex-col h-full transform transition-transform duration-200 ease-in-out md:relative md:translate-x-0
+      dark:bg-slate-900 dark:border-slate-800
     ${isOpen ? "translate-x-0" : "-translate-x-full"}
   `}
     >
       {/* Logo */}
       <div className="p-6 pb-4">
-        <div className="text-xl tracking-tight text-slate-800 flex items-center gap-1.5">
+        <div className="text-xl tracking-tight text-slate-800 flex items-center gap-1.5 dark:text-slate-100">
           <img src="/logo.svg" alt="logo" className="size-6" />
           <span>Scheduler</span>
         </div>
       </div>
       {/* Nav section */}
       <div className="px-6 py-2">
-        <span className="text-xs text-slate-500 uppercase tracking-wider">
+        <span className="text-xs text-slate-500 uppercase tracking-wider dark:text-slate-400">
           Menu
         </span>
       </div>
@@ -56,10 +57,10 @@ const Sidebar = ({
               end={item.path === "/dashboard"}
               onClick={() => setIsOpen(false)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded text-sm transition-all  duration-150 border
-  ${isActive ? "text-red-600 bg-red-50 border-red-100" : "text-slate-500 border-transparent hover:bg-slate-50 hover:text-slate-700"}`}
+  ${isActive ? "text-red-600 bg-red-50 border-red-100 dark:text-red-300 dark:bg-red-500/10 dark:border-red-500/25" : "text-slate-500 border-transparent hover:bg-slate-50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"}`}
             >
               <item.icon
-                className={`size-4.5 shrink-0 ${isActive ? "text-red-500" : "text-slate-500"}`}
+                className={`size-4.5 shrink-0 ${isActive ? "text-red-500 dark:text-red-300" : "text-slate-500 dark:text-slate-400"}`}
               />
               {item.name}
               {isActive && (
@@ -70,20 +71,20 @@ const Sidebar = ({
         })}
       </nav>
       {/* User Footer */}
-      <div className="p-4 border-t border-slate-100 ">
+      <div className="p-4 border-t border-slate-100 dark:border-slate-800">
         <div className="flex gap-2">
           <div className="size-8 rounded-full bg-linear-to-br from-red-400 to-pink-400 flex items-center justify-center text-white text-sm font-medium shrink-0">
             {user?.name?.charAt(0).toUpperCase() || "U"}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm text-slate-800 truncate">{user?.name}</div>
-            <div className="text-sm text-slate-400 truncate">{user?.email}</div>
+            <div className="text-sm text-slate-800 truncate dark:text-slate-100">{user?.name}</div>
+            <div className="text-sm text-slate-400 truncate dark:text-slate-500">{user?.email}</div>
           </div>
         </div>
         <button
           onClick={logout}
           className="mt-1 flex items-center gap-2 px-3 py-2 w-full rounded text-sm
-  text-slate-500 hover:text-red-500 hover:bg-red-50
+  text-slate-500 hover:text-red-500 hover:bg-red-50 dark:text-slate-400 dark:hover:text-red-300 dark:hover:bg-red-500/10
   transition-all duration-150"
         >
           <LogOutIcon className="size-4" />

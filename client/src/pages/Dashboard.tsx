@@ -67,9 +67,9 @@ const Dashboard = () => {
       {/* welcome Bar */}
 
       <div>
-        <h2 className="text-2xl text-slate-900">Good morning 👋 </h2>
+        <h2 className="text-2xl text-slate-900 dark:text-slate-100">Good morning 👋 </h2>
 
-        <p className="text-slate-500 text-sm mt-0.5">
+        <p className="text-slate-500 text-sm mt-0.5 dark:text-slate-400">
           Here's what's happening with your social accounts today.
         </p>
       </div>
@@ -80,7 +80,7 @@ const Dashboard = () => {
         {statsCard.map((card) => (
           <div
             key={card.label}
-            className="bg-white relative border border-slate-200 rounded-2xl p-5 hover:bg-red-50 hover:border-red-200 transition-all"
+            className="bg-white relative border border-slate-200 rounded-2xl p-5 hover:bg-red-50 hover:border-red-200 transition-all dark:bg-slate-900 dark:border-slate-800 dark:hover:bg-red-500/10 dark:hover:border-red-500/30"
           >
             <div className="flex items-center justify-between mb-4">
               <div className="text-2xl font-semibold">{card.value}</div>
@@ -91,29 +91,29 @@ const Dashboard = () => {
               </div>
             </div>
 
-            <p className="text-sm text-slate-500 mt-1">{card.label}</p>
+            <p className="text-sm text-slate-500 mt-1 dark:text-slate-400">{card.label}</p>
           </div>
         ))}
       </div>
       {/* Activity Feed */}
-      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-          <h2 className="text-slate-900 font-semibold">Recent Activity</h2>
+      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden dark:bg-slate-900 dark:border-slate-800">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-800">
+          <h2 className="text-slate-900 font-semibold dark:text-slate-100">Recent Activity</h2>
 
-          <span className="text-sm text-slate-500">
+          <span className="text-sm text-slate-500 dark:text-slate-400">
             {activities.length} events
           </span>
         </div>
 
         {activities.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 px-6">
-            <div className="size-12 bg-slate-100 rounded-xl flex items-center justify-center mb-3">
-              <ActivityIcon className="size-6 text-slate-400" />
+            <div className="size-12 bg-slate-100 rounded-xl flex items-center justify-center mb-3 dark:bg-slate-800">
+              <ActivityIcon className="size-6 text-slate-400 dark:text-slate-500" />
             </div>
 
-            <p className="text-slate-500">No activity yet</p>
+            <p className="text-slate-500 dark:text-slate-400">No activity yet</p>
 
-            <p className="text-slate-400 text-sm mt-1">
+            <p className="text-slate-400 text-sm mt-1 dark:text-slate-500">
               Connect accounts and schedule posts to see events here.
             </p>
           </div>
@@ -122,24 +122,24 @@ const Dashboard = () => {
             {activities.map((activity) => (
               <div
                 key={activity.id}
-                className="flex items-start gap-4 px-6 py-4 hover:bg-slate-50/50 transition-colors"
+                className="flex items-start gap-4 px-6 py-4 hover:bg-slate-50/50 transition-colors dark:hover:bg-slate-800/70"
               >
-                <div className="size-9 rounded-xl flex items-center justify-center shrink-0 bg-zinc-100">
-                  <SendIcon className="size-4 text-zinc-600" />
+                <div className="size-9 rounded-xl flex items-center justify-center shrink-0 bg-zinc-100 dark:bg-slate-800">
+                  <SendIcon className="size-4 text-zinc-600 dark:text-slate-300" />
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2 mb-1">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600 dark:bg-slate-800 dark:text-slate-300">
                       Published
                     </span>
 
-                    <span className="text-xs text-slate-400 shrink-0">
+                    <span className="text-xs text-slate-400 shrink-0 dark:text-slate-500">
                       {new Date(activity.createdAt).toLocaleString()}
                     </span>
                   </div>
 
-                  <p className="text-sm text-slate-600 mt-0.5">
+                  <p className="text-sm text-slate-600 mt-0.5 dark:text-slate-300">
                     {activity.description}
                   </p>
                 </div>

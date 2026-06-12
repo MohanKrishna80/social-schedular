@@ -150,16 +150,16 @@ const Scheduler = () => {
     <div className="flex flex-col lg:flex-row gap-6 h-full">
       {/* Compose Panel */}
       <div className="w-full lg:w-[460px] shrink-0">
-        <div className="bg-white rounded-2xl border border-slate-200 p-6">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 dark:bg-slate-900 dark:border-slate-800">
           <div className="flex items-center gap-2 mb-6">
-            <h2 className="text-lg text-slate-700">Compose Post</h2>
+            <h2 className="text-lg text-slate-700 dark:text-slate-100">Compose Post</h2>
           </div>
 
           <form className="space-y-5" onSubmit={handleSchedule}>
             {/* Platforms */}
 
             <div>
-              <label className="block text-xs text-slate-500 uppercase mb-2">
+              <label className="block text-xs text-slate-500 uppercase mb-2 dark:text-slate-400">
                 Platforms
               </label>
 
@@ -175,7 +175,7 @@ const Scheduler = () => {
                       className={`flex items-center gap-1.5 p-3 rounded-md border transition-all duration-150 ${
                         active
                           ? "bg-red-50 border-red-300 text-red-500 scale-105"
-                          : "border-slate-200 hover:border-slate-300"
+                          : "border-slate-200 hover:border-slate-300 dark:border-slate-700 dark:text-slate-300 dark:hover:border-slate-600"
                       }`}
                     >
                       <p.icon className="size-4.5" />
@@ -188,7 +188,7 @@ const Scheduler = () => {
             {/* Content */}
 
             <div>
-  <label className="block text-xs text-slate-500 uppercase mb-2">
+  <label className="block text-xs text-slate-500 uppercase mb-2 dark:text-slate-400">
     Content
   </label>
 
@@ -197,7 +197,7 @@ const Scheduler = () => {
       required
       rows={5}
       placeholder="What do you want to share today?"
-      className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 text-sm placeholder-slate-400 outline-none resize-none"
+      className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 text-sm placeholder-slate-400 outline-none resize-none dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-500"
       value={content}
       onChange={(e) => setContent(e.target.value)}
     />
@@ -225,12 +225,12 @@ const Scheduler = () => {
 
             {/* Media upload */}
             <div>
-              <label className="block text-xs text-slate-500 uppercase mb-2">
+              <label className="block text-xs text-slate-500 uppercase mb-2 dark:text-slate-400">
                 Media (optional)
               </label>
 
               {mediaFile ? (
-                <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                <div className="relative rounded-xl overflow-hidden border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-950">
                   {mediaFile.type.startsWith("image/") ? (
                     <img
                       src={URL.createObjectURL(mediaFile)}
@@ -255,9 +255,9 @@ const Scheduler = () => {
               ) : (
                 <label
                 htmlFor="media-upload"
-                className="flex items-center justify-center gap-2 p-5 py-10 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-red-300 hover:bg-red-50/30 transition-all group"
+                className="flex items-center justify-center gap-2 p-5 py-10 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-red-300 hover:bg-red-50/30 transition-all group dark:border-slate-700 dark:hover:border-red-500/40 dark:hover:bg-red-500/10"
               >
-                <span className="text-sm text-slate-500 group-hover:text-red-600 transition-colors">
+                <span className="text-sm text-slate-500 group-hover:text-red-600 transition-colors dark:text-slate-400 dark:group-hover:text-red-300">
                   Click to upload image or video
                 </span>
               </label>
@@ -280,7 +280,7 @@ const Scheduler = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-slate-500 uppercase mb-2">
+                <label className="block text-xs text-slate-500 uppercase mb-2 dark:text-slate-400">
                   Date
                 </label>
 
@@ -290,7 +290,7 @@ const Scheduler = () => {
                   <input
                     type="date"
                     required
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm outline-none"
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm outline-none dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100"
                     value={scheduledDate}
                     onChange={(e) => setScheduledDate(e.target.value)}
                   />
@@ -298,7 +298,7 @@ const Scheduler = () => {
               </div>
 
               <div>
-                <label className="block text-xs text-slate-500 uppercase mb-2">
+                <label className="block text-xs text-slate-500 uppercase mb-2 dark:text-slate-400">
                   Time
                 </label>
 
@@ -308,7 +308,7 @@ const Scheduler = () => {
                   <input
                     type="time"
                     required
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm outline-none"
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 text-sm outline-none dark:bg-slate-950 dark:border-slate-700 dark:text-slate-100"
                     value={scheduledTime}
                     onChange={(e) => setScheduledTime(e.target.value)}
                   />
@@ -341,26 +341,26 @@ const Scheduler = () => {
       {/* Queue Panels */}
       <div className="flex-1 flex flex-col gap-6 min-w-0">
         {/* Upcoming */}
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-slate-100">
-            <CalendarDaysIcon className="size-4 text-zinc-500" />
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden dark:bg-slate-900 dark:border-slate-800">
+          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-slate-100 dark:border-slate-800">
+            <CalendarDaysIcon className="size-4 text-zinc-500 dark:text-slate-400" />
 
-            <h3 className="text-slate-900 text-sm">Upcoming</h3>
+            <h3 className="text-slate-900 text-sm dark:text-slate-100">Upcoming</h3>
 
-            <span className="ml-auto text-xs font-bold text-zinc-700 px-2 py-0.5 rounded-full bg-zinc-100">
+            <span className="ml-auto text-xs font-bold text-zinc-700 px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-slate-800 dark:text-slate-300">
               {scheduled.length}
             </span>
           </div>
-          <div className="max-h-72 overflow-y-auto divide-y divide-slate-50">
+          <div className="max-h-72 overflow-y-auto divide-y divide-slate-50 dark:divide-slate-800">
             {scheduled.length === 0 ? (
-              <div className="py-10 text-center text-slate-400 text-sm">
+              <div className="py-10 text-center text-slate-400 text-sm dark:text-slate-500">
                 No posts scheduled yet
               </div>
             ) : (
               scheduled.map((post) => (
                 <div
                   key={post._id}
-                  className="px-5 py-4 hover:bg-slate-50/60 transition-colors"
+                  className="px-5 py-4 hover:bg-slate-50/60 transition-colors dark:hover:bg-slate-800/70"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
@@ -370,7 +370,7 @@ const Scheduler = () => {
                         return meta ? (
                           <meta.icon
                             key={pl}
-                            className="size-3.5 text-slate-400"
+                            className="size-3.5 text-slate-400 dark:text-slate-500"
                           />
                         ) : null;
                       })}
@@ -378,12 +378,12 @@ const Scheduler = () => {
 
                     <div className="flex items-center gap-2">
                       {post.mediaType && (
-                        <span className="text-xs text-slate-600 border border-slate-200 bg-slate-100 px-1.5 py-0.5 rounded-md font-semibold capitalize">
+                        <span className="text-xs text-slate-600 border border-slate-200 bg-slate-100 px-1.5 py-0.5 rounded-md font-semibold capitalize dark:text-slate-300 dark:border-slate-700 dark:bg-slate-800">
                           {post.mediaType}
                         </span>
                       )}
 
-                      <span className="text-xs text-slate-400">
+                      <span className="text-xs text-slate-400 dark:text-slate-500">
                         {new Date(post.scheduledFor).toLocaleString()}
                       </span>
                     </div>
@@ -391,7 +391,7 @@ const Scheduler = () => {
 
                   {/* Post content*/}
 
-                  <p className="text-sm text-slate-500 line-clamp-2 max-w-md">
+                  <p className="text-sm text-slate-500 line-clamp-2 max-w-md dark:text-slate-300">
                     {post.content}
                   </p>
                 </div>
@@ -402,26 +402,26 @@ const Scheduler = () => {
 
         {/* Published */}
 
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-slate-100">
-            <SendIcon className="size-4 text-zinc-500" />
+        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden dark:bg-slate-900 dark:border-slate-800">
+          <div className="flex items-center gap-2.5 px-5 py-4 border-b border-slate-100 dark:border-slate-800">
+            <SendIcon className="size-4 text-zinc-500 dark:text-slate-400" />
 
-            <h3 className="text-slate-900 text-sm">Published</h3>
+            <h3 className="text-slate-900 text-sm dark:text-slate-100">Published</h3>
 
-            <span className="ml-auto text-xs font-bold text-zinc-700 px-2 py-0.5 rounded-full bg-zinc-100">
+            <span className="ml-auto text-xs font-bold text-zinc-700 px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-slate-800 dark:text-slate-300">
               {published.length}
             </span>
           </div>
-          <div className="max-h-72 overflow-y-auto divide-y divide-slate-50">
+          <div className="max-h-72 overflow-y-auto divide-y divide-slate-50 dark:divide-slate-800">
             {published.length === 0 ? (
-              <div className="py-10 text-center text-slate-400 text-sm">
+              <div className="py-10 text-center text-slate-400 text-sm dark:text-slate-500">
                 No posts published yet
               </div>
             ) : (
               published.map((post) => (
                 <div
                   key={post._id}
-                  className="px-5 py-4 hover:bg-slate-50/60 transition-colors"
+                  className="px-5 py-4 hover:bg-slate-50/60 transition-colors dark:hover:bg-slate-800/70"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
@@ -431,7 +431,7 @@ const Scheduler = () => {
                         return meta ? (
                           <meta.icon
                             key={pl}
-                            className="size-3.5 text-slate-400"
+                            className="size-3.5 text-slate-400 dark:text-slate-500"
                           />
                         ) : null;
                       })}
@@ -439,15 +439,15 @@ const Scheduler = () => {
 
                     <div className="flex items-center gap-2">
                       {post.mediaType && (
-                        <span className="text-xs text-slate-600 border border-slate-200 bg-slate-100 px-1.5 py-0.5 rounded-md font-semibold capitalize">
+                        <span className="text-xs text-slate-600 border border-slate-200 bg-slate-100 px-1.5 py-0.5 rounded-md font-semibold capitalize dark:text-slate-300 dark:border-slate-700 dark:bg-slate-800">
                           {post.mediaType}
                         </span>
                       )}
 
-                      <span className="text-xs text-slate-400">
+                      <span className="text-xs text-slate-400 dark:text-slate-500">
                         {new Date(post.updatedAt).toLocaleString()}
                       </span>
-                      <span className="text-xs text-emerald-700 border bg-emerald-50 border-emerald-100 px-2 py-0.5 rounded-full">
+                      <span className="text-xs text-emerald-700 border bg-emerald-50 border-emerald-100 px-2 py-0.5 rounded-full dark:text-emerald-300 dark:bg-emerald-500/10 dark:border-emerald-500/20">
                         Published
                       </span>
                     </div>
@@ -455,7 +455,7 @@ const Scheduler = () => {
 
                   {/* Post content*/}
 
-                  <p className="text-sm text-slate-500 line-clamp-2 max-w-4/5">
+                  <p className="text-sm text-slate-500 line-clamp-2 max-w-4/5 dark:text-slate-300">
                     {post.content}
                   </p>
                 </div>
