@@ -41,7 +41,7 @@ const leonardoJob = async (
       
 
       if (generation.status === "COMPLETE") {
-        console.log(
+        
         
 
         if (
