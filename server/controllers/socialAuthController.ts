@@ -1,13 +1,12 @@
-//
-
-import { Request, Response } from "express";
+import { Response } from "express";
 import zernio from "../config/zernio.js";
 import { User } from "../Models/user.js";
 import { Account } from "../Models/Account.js";
 import { AuthRequest } from "../middleware/authMiddlewares.js";
 
-// Helper function to ensure user has a Zer io profile
-
+// ---------------------------------------------
+// Helper: Get or Create Zernio Profile
+// ---------------------------------------------
 const getOrCreateZernioProfile = async (user: any) => {
   try {
     const result = await zernio.profiles.listProfiles();
@@ -22,7 +21,7 @@ const getOrCreateZernioProfile = async (user: any) => {
       const profileId = profiles[0]._id || profiles[0].id;
 
       await User.findByIdAndUpdate(user._id, {
-        zernoiPtrofileId: profileId,
+        zernoiPtrofileId: profileId, // Rename if your schema uses zernioProfileId
       });
 
       return profileId;
@@ -35,8 +34,7 @@ const getOrCreateZernioProfile = async (user: any) => {
     });
 
     const created =
-      (createResult.data as any)?.profile ||
-      createResult.data;
+      (createResult.data as any)?.profile || createResult.data;
 
     const profileId = created?._id || created?.id;
 
@@ -51,30 +49,34 @@ const getOrCreateZernioProfile = async (user: any) => {
     return profileId;
   } catch (error: any) {
     console.error(
-      "getOrCreateZernioProfile Error",
+      "getOrCreateZernioProfile Error:",
       error?.message || error
     );
     throw error;
   }
 };
-//Generate OAuth authotization URl
-//GEt api/auth/:platform
 
+// ---------------------------------------------
+// Generate OAuth Authorization URL
+// GET /api/oauth/:platform
+// ---------------------------------------------
 export const generateAuthUrl = async (
   req: AuthRequest,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   try {
     const { platform } = req.params;
 
     const profileId = await getOrCreateZernioProfile(req.user);
 
-    const origin = req.headers.origin;
+    const origin = req.headers.origin || process.env.CLIENT_URL;
 
     const redirectUrl = `${origin}/accounts`;
-  
+
     const result = await zernio.connect.getConnectUrl({
-      path: { platform: platform as any },
+      path: {
+        platform: platform as any,
+      },
       query: {
         profileId,
         redirect_url: redirectUrl,
@@ -83,53 +85,48 @@ export const generateAuthUrl = async (
 
     const data = result.data as any;
 
-    
-
-    const authUrl = data.authUrl;
+    const authUrl = data?.authUrl;
 
     if (!authUrl) {
       throw new Error(
-        `zernio retuned no authUrl, Full responce:${JSON.stringify(data)}`,
+        `Zernio returned no authUrl. Response: ${JSON.stringify(data)}`
       );
     }
-    res.json({ url: authUrl });
+
+    res.status(200).json({
+      url: authUrl,
+    });
   } catch (error: any) {
-   
-  
+    console.error("Generate Auth URL Error:", error);
+
     res.status(500).json({
-      message: error?.message || "Server Error ",
+      message: error?.message || "Server Error",
     });
   }
 };
 
-//Sync connected accounts from zernio to MongoDB
-// GEt /api/oauth/sync
-
+// ---------------------------------------------
+// Sync Connected Accounts
+// GET /api/oauth/sync
+// ---------------------------------------------
 export const syncAccounts = async (
   req: AuthRequest,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   try {
-   
-
     const profileId = await getOrCreateZernioProfile(req.user);
 
-    
-
     const result = await zernio.accounts.listAccounts({
-      query: { profileId } as any,
+      query: {
+        profileId,
+      } as any,
     });
 
     const data = result.data as any;
 
-  
-
     const zernioAccounts = Array.isArray(data)
       ? data
       : data?.accounts || [];
-
-    
-    );
 
     const supportedPlatforms = [
       "twitter",
@@ -141,16 +138,10 @@ export const syncAccounts = async (
     const syncedAccounts = [];
 
     for (const zAccount of zernioAccounts) {
-     
-
       const zId = zAccount._id || zAccount.id;
 
-      console.log("Zernio Account ID:", zId);
-
       if (!zId) {
-        console.warn(
-          "Skipping account because no account ID was found",
-        );
+        console.warn("Skipping account because account ID is missing.");
         continue;
       }
 
@@ -162,18 +153,12 @@ export const syncAccounts = async (
         .toString()
         .toLowerCase();
 
-      
-
-      const normalizedPlatform = supportedPlatforms.find((p) =>
-        rawPlatform.includes(p),
+      const normalizedPlatform = supportedPlatforms.find((platform) =>
+        rawPlatform.includes(platform)
       );
 
-   
-
       if (!normalizedPlatform) {
-        console.log(
-          `Skipping unsupported platform: "${rawPlatform}"`
-        );
+        console.warn(`Skipping unsupported platform: ${rawPlatform}`);
         continue;
       }
 
@@ -194,8 +179,6 @@ export const syncAccounts = async (
           "",
       };
 
-     
-
       const account = await Account.findOneAndUpdate(
         {
           zernoiAccountId: zId,
@@ -204,20 +187,19 @@ export const syncAccounts = async (
         {
           upsert: true,
           new: true,
-        },
+        }
       );
-
-      
 
       syncedAccounts.push(account);
     }
 
-    const allAccounts = await Account.find({});
-
-   
-    res.status(200).json(syncedAccounts);
+    res.status(200).json({
+      success: true,
+      count: syncedAccounts.length,
+      accounts: syncedAccounts,
+    });
   } catch (error: any) {
-    
+    console.error("Sync Accounts Error:", error);
 
     res.status(500).json({
       message: error?.message || "Server Error",
