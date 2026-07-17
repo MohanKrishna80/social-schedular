@@ -110,9 +110,7 @@ export const syncAccounts = async (
   res: Response,
 ): Promise<void> => {
   try {
-    console.log("========== SYNC START ==========");
-    console.log("Authenticated User:", req.user);
-    console.log("User ID:", req.user?._id);
+   
 
     const profileId = await getOrCreateZernioProfile(req.user);
 
@@ -170,10 +168,7 @@ export const syncAccounts = async (
         rawPlatform.includes(p),
       );
 
-      console.log(
-        "Normalized Platform:",
-        normalizedPlatform,
-      );
+   
 
       if (!normalizedPlatform) {
         console.log(
